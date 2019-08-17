@@ -20,15 +20,19 @@ set showmatch
 set backspace=indent,eol,start
 set shiftwidth=4
 
-
-autocmd FileType markdown inoremap ` ```
-autocmd FileType markdown inoremap ** ****<Esc>F*j<CR>:noh<CR>i
-autocmd FileType markdown inoremap ~~ ~~~~<Esc>F~j<CR>:noh<CR>i
+autocmd FileType markdown inoremap ` ``````<left><left><left>python<cr><Esc>O
+autocmd FileType markdown inoremap *  ****<left><left>
+"用于在文字上添加删除线
+autocmd FileType markdown inoremap ~ ~~~~<left><left>  
 autocmd FileType markdown inoremap $ $$<left>
+autocmd FileType markdown nmap $ h$$<cr><Esc>O
 autocmd FileType markdown imap { {}<left>
 autocmd FileType python imap ; :
 autocmd FileType python imap { {}<left>
-autocmd FileType python imap ; :
+autocmd FileType python nmap " h""""""""<left><left><left><cr><Esc>O
+" Open the vimrc file anytime
+map <LEADER>rc :e ~/.config/nvim/init.vim<CR>
+
 noremap j h
 noremap i k
 noremap k j
@@ -38,10 +42,6 @@ noremap J 7h
 noremap I 5k
 noremap K 5j
 noremap L 7l
-noremap ( ()<RIGHT>
-noremap [ []<RIGHT>
-"inoremap { {<CR>}<ESC>0
-
 
 imap{ {}<ESC>h<CR><ESC>O
 
@@ -57,7 +57,6 @@ map si :set nosplitbelow<CR>:split<CR>
 map sk :set splitbelow<CR>:split<CR>
 map b :pn<CR>
 map n :bn<CR>
-"map 1 :$
 
 map <LEADER>j <C-w>h
 map <LEADER>i <C-w>k
@@ -208,5 +207,8 @@ let g:ncm2#match_highlight = 'sans-serif'
 "let g:jedi#completion_command = ""
 "let g:jedi#show_call_signatures = "1"
 
-" 是nerdcomment启用
-filetype plugin on
+" filetype plugin on 允许加载文件类型插件，打开此项，vim
+" 会根据检测到的文件类型，在runtimepath
+" 中搜索该类型的插件，其中nerdcommentor就是一个文件类型插件，它根据文件类型进行语义高亮，要想用它，那么就必须有下面的语句设置
+"但是通过在nomral下，：filetype 发现，默认已经打
+"filetype plugin on
