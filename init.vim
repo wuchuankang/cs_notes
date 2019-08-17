@@ -29,7 +29,7 @@ autocmd FileType markdown nmap $ h$$<cr><Esc>O
 autocmd FileType markdown imap { {}<left>
 autocmd FileType python imap ; :
 autocmd FileType python imap { {}<left>
-autocmd FileType python nmap " h""""""""<left><left><left><cr><Esc>O
+autocmd FileType python nmap <leader>' h""""""""<left><left><left><cr><Esc>O
 " Open the vimrc file anytime
 map <LEADER>rc :e ~/.config/nvim/init.vim<CR>
 
