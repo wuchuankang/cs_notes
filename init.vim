@@ -1,7 +1,7 @@
 "配置主要参照 github.com/theniceboy/nvim
 syntax on
 
-let mapleader=";"
+let mapleader=" "
 
 set smartindent
 set expandtab
@@ -14,16 +14,19 @@ set incsearch
 set hlsearch
 set showcmd
 set wildmenu
+set scrolloff=5
 set tabstop=4
 set cindent
 set showmatch
 set backspace=indent,eol,start
 set shiftwidth=4
+" 重新打开文件后，光标会定位在上次编的位置
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 autocmd FileType markdown inoremap ` ``````<left><left><left>python<cr><Esc>O
 autocmd FileType markdown inoremap *  ****<left><left>
 "用于在文字上添加删除线
-autocmd FileType markdown inoremap ~ ~~~~<left><left>  
+"autocmd FileType markdown inoremap ~ ~~~~<left><left>  
 autocmd FileType markdown inoremap $ $$<left>
 autocmd FileType markdown nmap $ h$$<cr><Esc>O
 autocmd FileType markdown imap { {}<left>
@@ -55,7 +58,7 @@ map sl :set splitright<CR>:vsplit<CR>
 map sj :set nosplitright<CR>:vsplit<CR>
 map si :set nosplitbelow<CR>:split<CR>
 map sk :set splitbelow<CR>:split<CR>
-map b :pn<CR>
+"map b :pn<CR>  "和db删除光标前的字符冲突
 map n :bn<CR>
 
 map <LEADER>j <C-w>h
@@ -70,11 +73,15 @@ map <down> :res -5<CR>
 map <left> :vertical resize-5<CR>
 map <right> :vertical resize+5<CR>
 
-
+"按shift+v进入visual line模式,然后输入normal A (<++>),
+"下面的语句中的c4l，c是change改变的意思，想有改变4个字符，并进入insert模式
+map <LEADER><LEADER> <Esc>/<++><CR>:nohlsearch<CR>c4l
 
 call plug#begin('~/.vim/plugged')
-
+" Other visual enhancement
+Plug 'nathanaelkane/vim-indent-guides'
 Plug 'heavenshell/vim-pydocstring'
+" markdown中用于补全表格，虽然安装，但当前没有用
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'iamcco/mathjax-support-for-mkdp' 
@@ -102,7 +109,7 @@ Plug 'roxma/nvim-yarp'
 
 " 为python提供语义高亮
 Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins' }
-" 是快速注释,;cc是注释，；cu是取消注释
+" 是快速注释,默认已经映射过了 <leader>cc是注释，<leader>cu是取消注释
 Plug 'scrooloose/nerdcommenter'
 call plug#end()
 
@@ -125,8 +132,15 @@ let g:lightline = {
   \         'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
   \     }
   \ }
-"=====you complete me
 
+" === vim-indent-guide
+" ===
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_color_change_percent = 1
+silent! unmap <LEADER>ig
+autocmd WinEnter * silent! unmap <LEADER>ig
 
 " ===nredtree
 map ff :NERDTreeToggle<CR>
