@@ -33,4 +33,18 @@ linux 原来默认的是bash shell，我已经更该为 fish shell，那么在 ~
     aa = '$aa'456
     PATH = '$PATH$':xx #将xx目录添加到系统PATH 环境变量中，添加：的原因是path值是各个路径用：分开的。
     ```
-NOTE ：上面所讲的，是在bash中执行的，只对当前有用，一旦系统重启，其定义的普通变量还是系统变量都会无效，也就是被删除掉，要想永久有效，得放到相应的配置文件中。
+## NOTE ：  
+- 上面所讲的，是在bash中执行的，只对当前有用，一旦系统重启，其定义的普通变量还是系统变量都会无效，也就是被删除掉，要想永久有效，得放到相应的配置文件中。
+- 如果环境变量的值是某个命令或者软件启动的命令路径，那么 $变量 就可以使用该命令，例如：
+```python
+export EDITOR=/usr/bin/nano
+export chrome = /usr/bin/google-chrome-stable
+$EDITOR #启动 nano
+$chrome #启动chrome
+```
+- 系统的配置文件
+    - /etc/profile
+    - ~/.bash_profile
+    - ~/.profile  
+    - ~/.bashrc   对于login 模式，会读取 /etc/profile ，另外 ~/.bash_profile 和 ~/.profile ，如果存在前者，则后一个不读取，这是在Ubuntu，centos，在manjaro中则反过来，会读取后者，而不读前者。会存在这两个的原因是shell发展历史中不同的命名习惯造成的，用户可以二选其一。重要的是这两个只是对bash shell 有用
+    - ~/.config/fish/config.fish  : fish的配置文件
