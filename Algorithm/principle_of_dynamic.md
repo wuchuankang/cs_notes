@@ -1,7 +1,7 @@
 # <center> principle of dynamic <center>
 ## the dynamic programming paradigm   
 * identify a relatively small collection of subproble 
-* show how to quickly and correctl solve 'larger' subprobles given the solutions to smaller ones   
+* show how to quickly and correctly solve 'larger' subprobles given the solutions to smaller ones   
 * show how to quickly and correctly infer the final solution from the solutions to all of the subproblems 
 ### supplement:
 对于上面的第二点，可以从两方面取考虑，一个是top-down ，一个是bottle-up。  
@@ -9,7 +9,7 @@ top-down 意思是：假定给定整个问题的解，那么我怎么求解比�
 bottle-up意思是：假定给定n-1个规模或者更小一点规模问题的解，怎么求得n个问题规模的解。
 
 ### notes:
-systematically solve all the subprobles one by one , workong from 'smallest ' to 'largest ', and extract the final solutions from those of the subproblems .
+systematically solve all the subprobles one by one , working from 'smallest ' to 'largest ', and extract the final solutions from those of the subproblems .
 
 ### notice:
 动态规划有一个常见的误区，那就是以为要将子问题完全解决，再来解决original problem。  
