@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/home/wck/Reposities/NLP_AssignmentS/.git'
+let g:netrw_dirhist_2='/home/wck/.config/fish/functions/fish_user_key_bindings.fish'
+let g:netrw_dirhist_3='/home/wck/pytorch_learning'
+let g:netrw_dirhist_4='/home/wck/pytorch_learning/pytorch_notes.md'
+let g:netrw_dirhist_5='/usr/local/lib/python3.6/dist-packages/torch/nn/modules'
+let g:netrw_dirhist_6='/home/wck/pytorch_learning/Deep-Learning-with-PyTorch-Tutorials/lesson45-Cifar10与ResNet18实战'
+let g:netrw_dirhist_7='/home/wck/pytorch_learning/practice/CIFAR'
+let g:netrw_dirhist_8='/home/wck/Reposities/NLP_NOTES/pytorch_note'

@@ -1,4 +1,15 @@
 "配置主要参照 github.com/theniceboy/nvim
+
+" ===
+" === Auto load for first time uses
+" ===
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+
 syntax on
 
 let mapleader=" "
@@ -30,7 +41,8 @@ autocmd FileType markdown inoremap *  ****<left><left>
 autocmd FileType markdown inoremap $ $$<left>
 autocmd FileType markdown nmap $ h$$<cr><Esc>O
 autocmd FileType markdown imap { {}<left>
-autocmd FileType python imap ; :
+autocmd FileType markdown imap <  <
+autocmd FileType python inoremap ; :
 autocmd FileType python imap { {}<left>
 autocmd FileType python nmap <leader>' h""""""""<left><left><left><cr><Esc>O
 " Open the vimrc file anytime
@@ -60,6 +72,11 @@ map si :set nosplitbelow<CR>:split<CR>
 map sk :set splitbelow<CR>:split<CR>
 "map b :pn<CR>  "和db删除光标前的字符冲突
 map n :bn<CR>
+map q :bd<CR>
+
+"将取消高亮设置map为;
+nnoremap ; :noh<CR>    
+
 
 map <LEADER>j <C-w>h
 map <LEADER>i <C-w>k
@@ -100,6 +117,7 @@ Plug 'connorholyday/vim-snazzy'
 " ncm2 代码补全
 Plug 'ncm2/ncm2'
 Plug 'ncm2/ncm2-jedi'
+Plug 'davidhalter/jedi-vim'  "这个是最初的创造者，专门补全Python，但是我们这里用ncm2-jedi来补全，用jedi-vim各种命令跳转功能，youcompleteme 就是采用jieda不全Python
 Plug 'ncm2/ncm2-github'
 Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-path'
@@ -220,6 +238,17 @@ let g:ncm2#match_highlight = 'sans-serif'
 "let g:jedi#popup_on_dot = 1
 "let g:jedi#completion_command = ""
 "let g:jedi#show_call_signatures = "1"
+"==============================
+"====================== vim-jedi
+"======================
+let g:jedi#completions_enabled = 0   "不使用它补全，用ncm2/jedi补全，下面注释掉的是默认值，想更改就按照github上的说明文档进行更改
+"let g:jedi#goto_command = "<leader>d"
+"let g:jedi#goto_assignments_command = "<leader>g"
+"let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = "<leader>f"
+"let g:jedi#usages_command = "<leader>n"
+"let g:jedi#completions_command = "<C-Space>"
+"let g:jedi#rename_command = "<leader>r"
 
 " filetype plugin on 允许加载文件类型插件，打开此项，vim
 " 会根据检测到的文件类型，在runtimepath
