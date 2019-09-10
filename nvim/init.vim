@@ -3,7 +3,7 @@
 " ===
 " === Auto load for first time uses
 " ===
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
+if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
@@ -31,6 +31,10 @@ set cindent
 set showmatch
 set backspace=indent,eol,start
 set shiftwidth=4
+set foldmethod=indent "依据indent缩进方式折叠代码"
+set foldlevel=99
+" 将折叠命令改为zf，展开可以用zr，也可以zm
+map zf za   
 " 重新打开文件后，光标会定位在上次编的位置
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
@@ -131,6 +135,47 @@ Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins' }
 Plug 'scrooloose/nerdcommenter'
 call plug#end()
 
+
+" Compile function
+map r :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+  exec "w"
+  if &filetype == 'c'
+    exec "!g++ % -o %<"
+    exec "!time ./%<"
+  elseif &filetype == 'cpp'
+    exec "!g++ % -o %<"
+    exec "!time ./%<"
+  elseif &filetype == 'java'
+    exec "!javac %"
+    exec "!time java %<"
+  elseif &filetype == 'sh'
+    :!time bash %
+  elseif &filetype == 'python'
+    set splitbelow
+    ":vsp
+    ":vertical resize-10
+    :sp
+    :term python3 %
+  elseif &filetype == 'html'
+    exec "!chromium % &"
+  elseif &filetype == 'markdown'
+    exec "MarkdownPreview"
+  endif
+endfunc
+
+" working on it...
+map R :call CompileBuildrrr()<CR>
+func! CompileBuildrrr()
+  exec "w"
+  if &filetype == 'vim'
+    exec "source $MYVIMRC"
+  elseif &filetype == 'markdown'
+    exec "echo"
+  endif
+endfunc
+
+
 " ===
 " === Dress up my vim
 " ===
@@ -168,10 +213,13 @@ let NERDTreeMapUpdirKeepOpen = "j"
 let NERDTreeMapOpenSplit = ""
 let NERDTreeOpenVSplit = ""
 let NERDTreeMapActivateNode = "l"
-let NERDTreeMapOpenInTab = "o"
+let NERDTreeMapOpenInTab = "o"    "打开制定的文件
 let NERDTreeMapPreview = ""
-let NERDTreeMapCloseDir = "n"
-let NERDTreeMapChangeRoot = "u"
+let NERDTreeMapCloseDir = "u"
+let NERDTreeMapChangeRoot = "n"
+" mapmenu设置后，,+a 是添加一个文件或者路径，
+" ,+d是删除当前位置处的文件，进入添加或者删除操作后，不想操作，想退出，可以用ctrl+c取消
+let NERDTreeMapMenu = ","   
 
 " ===ale
 let g:ale_linters_explicit = 1
