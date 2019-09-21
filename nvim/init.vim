@@ -1,4 +1,7 @@
 "配置主要参照 github.com/theniceboy/nvim
+" 要想使得配置成功，则需要提前安装好node.js 和
+" yarn，因为一些配置需要他们来安装
+" 要想使得配置中的 jedi 能够使用，要单独安装jedi。
 
 " ===
 " === Auto load for first time uses
