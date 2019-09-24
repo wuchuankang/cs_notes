@@ -1,17 +1,4 @@
 "配置主要参照 github.com/theniceboy/nvim
-" 要想使得配置成功，则需要提前安装好node.js 和
-" yarn，因为一些配置需要他们来安装
-" 要想使得配置中的 jedi 能够使用，要单独安装jedi。
-
-" ===
-" === Auto load for first time uses
-" ===
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 
 syntax on
 
@@ -30,6 +17,7 @@ set showcmd
 set wildmenu
 set scrolloff=5
 set tabstop=4
+set clipboard=unnamed
 set cindent
 set showmatch
 set backspace=indent,eol,start
@@ -107,7 +95,7 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'heavenshell/vim-pydocstring'
 " markdown中用于补全表格，虽然安装，但当前没有用
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'iamcco/mathjax-support-for-mkdp' 
 Plug 'universal-ctags/ctags'
 "Plug 'ludovicchabant/vim-gutentags' 
@@ -131,7 +119,10 @@ Plug 'ncm2/ncm2-path'
 Plug 'ncm2/ncm2-match-highlight'
 Plug 'ncm2/ncm2-markdown-subscope'
 Plug 'roxma/nvim-yarp'
-
+" 进行多行编辑
+Plug 'terryma/vim-multiple-cursors'
+" 代码重构和补全
+"Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 " 为python提供语义高亮
 Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins' }
 " 是快速注释,默认已经映射过了 <leader>cc是注释，<leader>cu是取消注释
@@ -159,7 +150,9 @@ func! CompileRunGcc()
     ":vsp
     ":vertical resize-10
     :sp
-    :term python3 %
+    " 这里是在虚拟环境中的，不同的虚拟环境需要用不同的python编译器
+    " 这个可以通过在不同的虚拟环境中通过 which Python 来查询路径
+    :term /home/wck/.conda/envs/py36/bin/python %
   elseif &filetype == 'html'
     exec "!chromium % &"
   elseif &filetype == 'markdown'
@@ -239,7 +232,7 @@ let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
 let g:ale_c_cppcheck_options = ''
 let g:ale_cpp_cppcheck_options = ''
 
-let b:ale_linters = ['pylint']
+"let b:ale_linters = ['pylint']
 let b:ale_fixers = ['autopep8', 'yapf']
 
 " ===
@@ -299,10 +292,58 @@ let g:jedi#completions_enabled = 0   "不使用它补全，用ncm2/jedi补全，
 let g:jedi#documentation_command = "<leader>f"
 "let g:jedi#usages_command = "<leader>n"
 "let g:jedi#completions_command = "<C-Space>"
-"let g:jedi#rename_command = "<leader>r"
+" 使用它来给变量重命名!!!
+let g:jedi#rename_command = "<leader>r"  
 
 " filetype plugin on 允许加载文件类型插件，打开此项，vim
 " 会根据检测到的文件类型，在runtimepath
 " 中搜索该类型的插件，其中nerdcommentor就是一个文件类型插件，它根据文件类型进行语义高亮，要想用它，那么就必须有下面的语句设置
 "但是通过在nomral下，：filetype 发现，默认已经打
 "filetype plugin on
+
+
+" ===
+" === coc
+" ===
+" fix the most annoying bug that coc has
+"autocmd WinEnter * call timer_start(1000, { tid -> execute('unmap if')})
+"silent! autocmd BufEnter * silent! call silent! timer_start(600, { tid -> execute('unmap if')})
+"silent! autocmd WinEnter * silent! call silent! timer_start(600, { tid -> execute('unmap if')})
+
+"silent! au BufEnter * silent! unmap if
+""au TextChangedI * GitGutter
+"" Installing plugins
+"let g:coc_global_extensions = ['coc-python', 'coc-json', 'coc-gitignore']
+"" use <tab> for trigger completion and navigate to the next complete item
+"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+"function! s:check_back_space() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~ '\s'
+"endfunction
+"inoremap <silent><expr> <Tab>
+"      \ pumvisible() ? "\<C-n>" :
+"      \ <SID>check_back_space() ? "\<Tab>" :
+"      \ coc#refresh()
+"inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"" Useful commands
+"nmap <silent> gd <Plug>(coc-definition)
+"nmap <silent> gy <Plug>(coc-type-definition)
+"nmap <silent> gi <Plug>(coc-implementation)
+"nmap <silent> gr <Plug>(coc-references)
+"nmap <leader>rn <Plug>(coc-rename)
+
+
+"=====
+" multi_cursor
+" ======
+let g:multi_cursor_use_default_mapping=0
+
+" Default mapping
+let g:multi_cursor_start_word_key      = '<C-n>'
+let g:multi_cursor_select_all_word_key = '<A-n>'
+let g:multi_cursor_start_key           = 'g<C-n>'
+let g:multi_cursor_select_all_key      = 'g<A-n>'
+let g:multi_cursor_next_key            = '<C-n>'
+let g:multi_cursor_prev_key            = '<C-p>'
+let g:multi_cursor_skip_key            = '<C-x>'
+let g:multi_cursor_quit_key            = '<Esc>'
