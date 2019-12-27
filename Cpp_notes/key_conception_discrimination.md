@@ -25,10 +25,40 @@ int main(int argc, char * argv[]){
 int (*P)[n]   // ()优先级高，p 是个指针，指向的是一个一维数组，这个一维数组的长度是n，也可以说 p 的步长是n
 ```
 ```cpp
-int (*p)[5];   // 定义了一个指针，该指针指向包含5个元素的一维整型数组
+int (*p)[5];   // 定义了一个指针，该指针指向包含5个元素的一维整型数组，一般作为指向二维数组的函数参数使用
 int a[3][5];    // 
 p = a;  // 将二维数组的首地址赋给p，也就是a[0]或&a[0][0]
 p++; //将指向a[1][]，这就是也叫行指针的原因
+```
+```cpp
+#include <iostream>
+
+using namespace std;
+
+//void fun(int (*p)[3]){
+//  cout<<p[0][0]<<endl;
+//}
+
+// 形参中定义的二维数组 a[][3]，其名a 在函数中就是指向第一个一维数组的指针，而不是相当于
+void fun(int a[][3]){   // 上面注释掉的代码和该函数完全等同
+    cout<<a[0][0]<<endl;
+}
+
+//void foo(int *p){
+//    cout<<p[0]<<endl;
+//}
+
+void foo(int a[]){      // 上面代码等同
+    cout<<a[0]<<endl;
+}
+
+int main(int argc, char * argv[]){
+
+    int a[][3] = {{1, 2, 3}, {4, 5, 6}};
+    int b[2] = {2, 4};
+    fun(a);
+    foo(b);
+    return 0;
 ```
 
 ###  指针常量 / 常量指针
@@ -49,5 +79,4 @@ int * const p;  // const 修饰的是指针，也就是指针指向的地址，�
 
 ### 函数返回值：引用 / 指针
 
-assert 作用
 

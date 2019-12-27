@@ -1,25 +1,25 @@
 #include <iostream>
-#include <cstring>
-#include <string>
+#include <cassert>
 
 using namespace std;
 
-void MyPrint(string &p){
-    p = "this";
-    cout<<p<<endl;
+char *strcpy(char *strDest, const char *strSrc){
+    assert((strDest != NULL) && (strSrc != NULL));
+
+    char *adress = strDest;
+
+    while((*strDest++ = *strSrc++) != '\0');
+
+    return adress;
 }
 
 int main(int argc, char * argv[]){
-    string s;
-    s = "is";
-    char *p;
-    char a[10] = "this";
-    s = a;
-    cout<<strlen(a)<<endl;
-    cout<<sizeof(a)<<endl;
 
-    int b[] = {1,2,3};
-    cout<<s<<endl;
+    char a[10] = "this";
+    char *p;
+    p = NULL;
+    strcpy(p, a);
+
 
     return 0;
 }
