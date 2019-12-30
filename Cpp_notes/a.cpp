@@ -2,46 +2,32 @@
 
 using namespace std;
 
-
-class Complex{
+class A{
 private:
-    double real, imag;
 
 public:
-    Complex();
-    Complex (double r);
-    Complex (double r, double i);
-    Complex (Complex c1, Complex c2);
-    virtual ~Complex ();
+    int v;
+    A(int n){v = n;};
+    A(const A&);
+    ~A(){};
 };
 
-Complex::Complex(){
-    real = 0;
-    imag = 0;
+A::A(const A&a){
+    v = 8;
+    cout<<"call copy constructor"<<endl;
 }
 
-Complex::Complex(double r, double i){
-    real = r;
-    imag = i;
+A Foo(){
+    A b(4);
+    return b;
 }
-
-Complex::Complex(double r){
-    real = r;
-}
-
-Complex::Complex(Complex c1, Complex c2){
-    real = c1.real + c2.real;
-    imag = c1.imag + c2.imag;
-}
-
 
 int main(int argc, char *argv[]){
-    Complex c0;
-    Complex c00();
-    Complex c1(2, 3);
-    Complex c2(4);
-    Complex c3(c1, c2);
-    Complex *pc = new Complex(4, 5);
-    
+    //cout<<Foo().v<<endl;
+    A a(1);
+    A b(a);
+    A c = a;
+    cout<<b.v<<endl;
+
     return 0;
 }
