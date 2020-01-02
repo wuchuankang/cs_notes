@@ -24,86 +24,110 @@
 - 可以有多个构造函数，也就是说构造函数可以重载；
 - 没有返回值;  
 - **构造函数是用来初始化的，就是对成语变量分配内存空间和赋值这两个动作的，所以类中成员变量的写法只是个声明**
-```cpp
-struct Test
-{
-    Test(int a):i(a){}
-    int i ;
-};
-
-struct Te
-{
-    Test test ;   // 其他类的成员变量，这里只是声明，不是定义，所以无需调用构造函数(Test 构造函数带有参数)，所以也就不需要给test填写参数，它的定义在Te的构造函数
-    Te(Test &t)  // 构造函数，
+    ```cpp
+    struct Test
     {
-        test = t ;  //这里进行赋值操作，test对象先用调用 Test构造函数进行定义，再赋值，但是这里构造函数是有参的，所以编译器会报错 
-    }
-};
-```
-```cpp
-#include <iostream>
-
-using namespace std;
-
-class Complex{
-private:
-    double real, imag;
-
-public:
-    Complex();
-    Complex (double r);
-    Complex (double r, double i);
-
-    void getValue();
-    Complex (Complex c1, Complex c2);
-    ~Complex (){};
-};
-
-Complex::Complex(){
-    real = 0;
-    imag = 0;
-}
-
-Complex::Complex(double r, double i){
-    real = r;
-    imag = i;
-}
-
-Complex::Complex(double r){
-    real = r;
-}
-
-Complex::Complex(Complex c1, Complex c2){
-    real = c1.real + c2.real;
-    imag = c1.imag + c2.imag;
-}
-
-void Complex::getValue(){
-    cout<<real<<endl;
-}
-
-int main(int argc, char *argv[]){
-    Complex c0;     // 用到的是第一个构造函数，因为没有参数，使用下面的定义对象也一样，但是无参数的时候，一般使用这样定义的对象
-    //Complex c0();
-    Complex c1(2, 3);
-    Complex c2(4);
-    Complex c3(c1, c2);     // 这个要注意
-    Complex *pc = new Complex(4, 5);    // 这个重要，要将参数加上
-    pc->getValue();     // 指向类的指针，使用的是 "->" 符号访问成员
-    c3.getValue();      // 对象使用的 "." 访问成员
+        Test(int a):i(a){}
+        int i ;
+    };
     
-    return 0;
-}
-```
+    struct Te
+    {
+        Test test;   // 其他类的成员变量，这里只是声明，不是定义，所以无需调用构造函数(Test 构造函数带有参数)，所以也就不需要给test填写参数，它的定义在Te的构造函数
+        Te(Test &t)  // 构造函数，
+        {
+            test = t;  //这里进行赋值操作，test对象先用调用 Test构造函数进行定义，再赋值，但是这里构造函数是有参的，所以编译器会报错 
+        }
+    };
+    ```
+补充：  
+- ** Te 结构体中的 Test test， 之所以不能写成 Test test(2)，这是因为如果这样写，就是在声明的同时进行了定义和初始化，而创建 Te 的对象时，又调用了构造函数进行初始化，造成混乱；**
+- 声明只要给出变量的类型和变量名就行了
+    ```cpp
+    #include <iostream>
+    
+    using namespace std;
+    
+    class Complex{
+    private:
+        double real, imag;
+    
+    public:
+        Complex();
+        Complex (double r);
+        Complex (double r, double i);
+    
+        void getValue();
+        Complex (Complex c1, Complex c2);
+        ~Complex (){};
+    };
+    
+    Complex::Complex(){
+        real = 0;
+        imag = 0;
+    }
+    
+    Complex::Complex(double r, double i){
+        real = r;
+        imag = i;
+    }
+    
+    Complex::Complex(double r){
+        real = r;
+    }
+    
+    Complex::Complex(Complex c1, Complex c2){
+        real = c1.real + c2.real;
+        imag = c1.imag + c2.imag;
+    }
+    
+    void Complex::getValue(){
+        cout<<real<<endl;
+    }
+    
+    int main(int argc, char *argv[]){
+        Complex c0;     // 用到的是第一个构造函数，因为没有参数，使用下面的定义对象也一样，但是无参数的时候，一般使用这样定义的对象
+        //Complex c0();
+        Complex c1(2, 3);
+        Complex c2(4);
+        Complex c3(c1, c2);     // 这个要注意
+        Complex *pc = new Complex(4, 5);    // 这个重要，要将参数加上
+        pc->getValue();     // 指向类的指针，使用的是 "->" 符号访问成员
+        c3.getValue();      // 对象使用的 "." 访问成员
+        
+        return 0;
+    }
+    ```
+Note:  
+- 上面构造函数最好使用初始化列表，上面的构造函数是虽然名义上是用来初始化类的成员变量，但是不一定是对变量进行初始化操作，比如上面的构造函数，都是在函数体内部对成员变量进行赋值操作的，注意是赋值！**初始化与赋值的在操作任务量的区别，前者是在分配内存的时候，直接给定一个值，后者是先分配内存，然后再赋值，多了一次赋值操作**;  
+- 通过上面的分析，可以知道，通过初始化列表的好处；另外如果类中存在 const 成员变量，因为 const 变量必须初始化，如果使用在函数体内部进行赋值，那么编译器就会报错，则必须使用初始化列表；  
+    ```cpp
+    class Complex{
+    private:
+        double real, imag;
+        const int m_data;
+    
+    public:
+        Complex (double r, double i);
+    
+        void getValue();
+        Complex (Complex c1, Complex c2);
+        ~Complex (){};
+    };
+    
+    Complex::Complex(double r, double i, int n):real(r), imag(i), m_data(n){ 
+    
+    }
+    ```
 
-### 赋值构造函数
+### 复制构造函数
 同样，如果没有自己定义，则**编译器** 会自动生成一个复制构造函数；  
 复制构造函数不允许多个，因为复制构造函数是做复制操作，没法用参数个数和类型来区分用了哪一个复制构造函数，所以只有一个；  
 没有返回值，参数是类的引用或者常引用。  
-```cpp
-X(X&);  //X是类名
-X(const X&);    // 常引用，说明复制构造函数不允许改变被复制对象，这是合理的，因为复制操作，不需要改变被复制对象
-```
+    ```cpp
+    X(X&);  //X是类名
+    X(const X&);    // 常引用，说明复制构造函数不允许改变被复制对象，这是合理的，因为复制操作，不需要改变被复制对象
+    ```
 参数是引用的原因：**如果不是引用，在传递参数的时候就会被调用复制构造函数，而这个函数本身就是复制构造函数，会造成无穷的递归调用**  
 	
 1. 使用方式
@@ -114,6 +138,7 @@ X(const X&);    // 常引用，说明复制构造函数不允许改变被复制�
     - 用对象去初始化另一个对象(赋值不是，赋值调用的默认的赋值运算符"="，或者是该运算符的重载)
     - 对象作为函数的参数，(由于会调用赋值构造函数造成消耗，所以一般使用对象的引用作为参数)
     - 补充：返回值是对象(不是对象的引用), 以前是要调用复制构造函数，现在编译器对函数进行了优化，不需要再调用复制构造函数，直接返回值了。(**如何直接返回？是调用了赋值运算符么？尚不清楚**)
+    - **补充：函数调用中参数传递的本质是：是用实参来初始化形参，而不是替换，注意是初始化！！！所以可以说，复制构造函数调用就只有一种情况，那就是只有初始化另一个对象的时候被调用**
 
 ### 函数返回值： 引用 和 指针
 对于在函数内部定义的临时变量和指针，是不能作为函数返回值的，这是因为在return该量的时候，发生了复制工作(不一定是赋值，赋值运算符=在C++会被重载,这个时候，赋值就不一定是复制了)。  
@@ -166,4 +191,71 @@ int main(int argc, char*argv[]){
 
 ```cpp
 
+```
+
+### 赋值运算符重载(Assignment Operators function override)
+对象除了进行初始化操作(调用复制构造函数)，还会进行赋值操作(调用的是赋值运算符)。  
+- 但是与复制构造函数(自定义了，编译器就不会默认生成)稍有不同，当没有提供以**类或者类的引用**作为参数的赋值运算符函数时，那么编译器还会生成默认的赋值运算符函数进行赋值的工作(也就是复制)。这里注意加粗部分的限制语句，意思是：即使是自定义了赋值运算符函数，如果参数不是类或者类的引用，那么仍会生成。具体参见[一文说尽C++赋值运算符](https://www.cnblogs.com/zpcdbky/p/5027481.html)     
+```cpp
+
+```
+- 默认的赋值运算符函数进行赋值操作，和复制构造函数功能相似，所以同样有浅拷贝和深拷贝的问题，当对象中没有指针，没什么问题，否则赋值就是浅拷贝，两个对象中的指针指向同一块地址。  
+ ```cpp
+#include <iostream>
+using namespace std;
+ 
+class A{
+public:
+    int v;
+    int *p;
+    A();
+    A(const A&){};
+    ~A();
+};
+
+A::A(){
+    p = new int; // 
+    v = 1;
+}
+
+A::~A(){
+    delete p;
+}
+
+int main(){
+    A a1;
+    A a2;
+    a2.v = 2;
+    a2 = a1;
+    cout<<a2.v<<endl;   // 1
+    cout<<a1.p<<endl;   // 地址和下面的相同，说明两个对象的指针指向同一个内存
+    cout<<a2.p<<endl;
+	return 0;       
+}
+ ```
+最后会爆出下面的错误：free(): double free detected in tcache 2 ，意思同一块内存被释放了2次。  
+正确的做法是自己重载赋值运算符函数，具体就是在类中添加该函数，看下面：  
+```cpp
+class A{
+    ...
+    A & operator=(const A& scr);
+}
+
+A& A::operator=(const A& scr){
+    v = scr.v;
+    *p = *(scr.p);
+    return *this;
+}
+```
+用一个更实际的例子来说明，就是string 类的赋值运算符函数：  
+```cpp
+#include <cstring>      //用来使用 strcpy 函数
+class string{
+    ...
+    string & operator=(const string & str);
+}
+
+string & string::operator=(const string & str){
+    
+}
 ```
