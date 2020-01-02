@@ -22,7 +22,8 @@
     git remote rm origin | 删除与远程仓库的连接，如果远程仓库的本地名是其他的，那么替换origin就可以了，我尝试将origin换成远程仓库真实的名字，没有成功
     
 * .gitignore文件
-    在使用git add . 的时候，会将所有在工作区的文件都提交到临时存储区，但是有些文件不必要提交，比如(假如有)本地的配置文件等，或者就是自己不想提交到github上的文件，想要忽略掉这些文件，git仓库提供了一个途径，就是在仓库中建立一个 .gitignore 文件，将不想add 的文件的名字都填进去，就可以了。有些时候，我们已经把文件提交到临时存储区，或者commit到仓库区，那么就是想将该文件不加入仓库，或者说是不追踪，直接在.gitignore假如该文件名是不够的，因为一旦add后，就会在临时存储区留下cache，以后还会追踪，必须将cache删除后，才可以：git rm -f --cached xxx,这里的删除仅仅是在临时存放区或者仓库区中一种逻辑删除，还是在这个文件中的。
+    在使用git add . 的时候，会将所有在工作区的文件都提交到临时存储区，但是有些文件不必要提交，比如(假如有)本地的配置文件等，或者就是自己不想提交到github上的文件，想要忽略掉这些文件，git仓库提供了一个途径，就是在仓库中建立一个 .gitignore 文件，将不想add 的文件的名字都填进去，就可以了。有些时候，我们已经把文件提交到临时存储区，或者commit到仓库区，那么就是想将该文件不加入仓库，或者说是不追踪，直接在.gitignore加入该文件名是不够的，因为一旦add后，就会在临时存储区留下cache，以后还会追踪，必须将cache删除后，才可以：git rm -f --cached xxx,这里的删除仅仅是在临时存放区或者仓库区中一种逻辑删除，还是在这个文件中的。  
+    **要注意的是，在.gitignore 添加忽略文件的时候，不能够将当前路径加入进去，比如和 .gitignore 同一级的文件 a.cpp 要忽略，在 .gitignore 中要写成 a.cpp， 不可写成 ./a.cpp **
 
 * origin/master 和 master的关系  
     git clone 到本地的仓库，其远程仓库已经默认命名为origin(前面已经谈到了)，当我们在本地commit的时候，会出现"your branch is ahead of origin/master xx commit"，这里的origin/master就是远程仓库中的master分支，git clone url ，不加分支名，一般就是git 远程仓库中的master分支。
