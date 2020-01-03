@@ -12,15 +12,29 @@
 3. protect ：
 
 
-
-
-### 内联成员函数
-
 ### 成员函数的重载和缺省参数
 
 ### 构造函数
 
 - 用于初始化成员变量的，当没有自定义的构造函数，则**编译器** 会自动生成一个构造函数，但这个构造函数什么也不做；  
+- 成员变量在构造函数中初始化顺序，**当使用初始化列表，只与在类中声明的顺序有关，先声明的先定义，和在初始化列表中出现的顺序无关，这个尤其重要**；但如果在构造函数体内赋值，那么定义的顺序就是函数体内的顺序
+    ```cpp
+    class Dg{
+    public:
+        int a;
+        int b;
+        Dg(int b_);
+    };
+    // 写法错误，当使用初始化列表的时候，先初始化的是a，但是a 用了未初始化的b，所以后面会为错误
+    Dg::Dg(int b_):b(b_), a(b+1){  
+    }
+    
+    int main(int argc, char *argv[]){
+        Dg dog(3);
+        cout<<dog.a<<endl;  //非常大的一个值，每次运行都有不同
+        return 0;
+    }
+    ```
 - 可以有多个构造函数，也就是说构造函数可以重载；
 - 没有返回值;  
 - **构造函数是用来初始化的，就是对成语变量分配内存空间和赋值这两个动作的，所以类中成员变量的写法只是个声明**
@@ -41,7 +55,7 @@
     };
     ```
 补充：  
-- ** Te 结构体中的 Test test， 之所以不能写成 Test test(2)，这是因为如果这样写，就是在声明的同时进行了定义和初始化，而创建 Te 的对象时，又调用了构造函数进行初始化，造成混乱；**
+- **Te 结构体中的 Test test， 之所以不能写成 Test test(2)，这是因为如果这样写，就是在声明的同时进行了定义和初始化，而创建 Te 的对象时，又调用了构造函数进行初始化，造成混乱；**
 - 声明只要给出变量的类型和变量名就行了
     ```cpp
     #include <iostream>
@@ -146,37 +160,38 @@ Note:
 当返回值类型是引用的时候，返回的就是return 变量的引用，其实返回值直接就是该变量本身，因为引用只是变量的别名。当return 的是临时变量的时候，因为会被销毁，所以编译会出错；  
 返回值是引用，也就是被引用变量本身，所以该函数就是左值，可以放在等号的左边，进行其他操作；  
 要注意的是，当参数是是引用的时候，直接return 引用就可以了。
-```cpp
-#include <iostream>
-using namespace std;
-
-int gl = 2;
-int & foo(){
-    gl = 1;
-    return gl; // 返回的是gl 的引用
-}
-
-int & fun(int &a){
-    a += 1;
-    return a; //返回的是a的引用
-}
-
-int main(int argc, char*argv[]){
-    foo() = 4;
-    cout<<gl<<endl; // 4
-    int a = 2;
-    fun(a);
-    cout<<a<<endl;  //3
-    int b = foo();
-    cout<<b<<endl;  //1
-    cout<<gl<<endl; //1
-
-    return 0;
-}
-```
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    
+    int gl = 2;
+    int & foo(){
+        gl = 1;
+        return gl; // 返回的是gl 的引用
+    }
+    
+    int & fun(int &a){
+        a += 1;
+        return a; //返回的是a的引用
+    }
+    
+    int main(int argc, char*argv[]){
+        foo() = 4;
+        cout<<gl<<endl; // 4
+        int a = 2;
+        fun(a);
+        cout<<a<<endl;  //3
+        int b = foo();
+        cout<<b<<endl;  //1
+        cout<<gl<<endl; //1
+    
+        return 0;
+    }
+    ```
 
 ### 左值和右值
-
+左值是能够用取地址取得地址的变量，不是左值的就是右值；  
+具体可参见[C++11 左值、右值详解](https://blog.csdn.net/hyman_yx/article/details/52044632)
 
 
 ### const 关键字
@@ -200,62 +215,132 @@ int main(int argc, char*argv[]){
 
 ```
 - 默认的赋值运算符函数进行赋值操作，和复制构造函数功能相似，所以同样有浅拷贝和深拷贝的问题，当对象中没有指针，没什么问题，否则赋值就是浅拷贝，两个对象中的指针指向同一块地址。  
- ```cpp
-#include <iostream>
-using namespace std;
- 
-class A{
-public:
-    int v;
-    int *p;
-    A();
-    A(const A&){};
-    ~A();
-};
-
-A::A(){
-    p = new int; // 
-    v = 1;
-}
-
-A::~A(){
-    delete p;
-}
-
-int main(){
-    A a1;
-    A a2;
-    a2.v = 2;
-    a2 = a1;
-    cout<<a2.v<<endl;   // 1
-    cout<<a1.p<<endl;   // 地址和下面的相同，说明两个对象的指针指向同一个内存
-    cout<<a2.p<<endl;
-	return 0;       
-}
- ```
+     ```cpp
+    #include <iostream>
+    using namespace std;
+     
+    class A{
+    public:
+        int v;
+        int *p;
+        A();
+        A(const A&){};
+        ~A();
+    };
+    
+    A::A(){
+        p = new int; // 
+        v = 1;
+    }
+    
+    A::~A(){
+        delete p;
+    }
+    
+    int main(){
+        A a1;
+        A a2;
+        a2.v = 2;
+        a2 = a1;
+        cout<<a2.v<<endl;   // 1
+        cout<<a1.p<<endl;   // 地址和下面的相同，说明两个对象的指针指向同一个内存
+        cout<<a2.p<<endl;
+    	return 0;       
+    }
+     ```
 最后会爆出下面的错误：free(): double free detected in tcache 2 ，意思同一块内存被释放了2次。  
 正确的做法是自己重载赋值运算符函数，具体就是在类中添加该函数，看下面：  
-```cpp
-class A{
-    ...
-    A & operator=(const A& scr);
-}
-
-A& A::operator=(const A& scr){
-    v = scr.v;
-    *p = *(scr.p);
-    return *this;
-}
-```
-用一个更实际的例子来说明，就是string 类的赋值运算符函数：  
-```cpp
-#include <cstring>      //用来使用 strcpy 函数
-class string{
-    ...
-    string & operator=(const string & str);
-}
-
-string & string::operator=(const string & str){
+    ```cpp
+    class A{
+        ...
+        A & operator=(const A& scr);
+    }
     
-}
-```
+    A& A::operator=(const A& scr){
+        v = scr.v;
+        *p = *(scr.p);
+        return *this;
+    }
+    ```
+用一个更实际的例子来说明，就是string 类的赋值运算符函数：  
+    ```cpp
+    #include <iostream>
+    #include <string>
+    #include <cstring>
+    using namespace std;
+    
+    class String{
+    private:
+        char *p;
+    
+    public:
+        String();
+        String(const String&);
+        char *operator=(const char *p_scr);
+        String &operator=(const String &str);
+        const char * c_str(){return p;}
+        ~String();
+    };
+    
+    String::String():p(NULL){       // 这里给 p 分配了内存空间，只是指向的是 NULL 
+    }
+    
+    // 不用判断成员指着变量是否为空，因为还没有初始化，成员指针变量不可能指向任何地址的
+    String::String(const String& str){
+        if (str.p) {    
+            p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
+            strcpy(p, str.p);
+        }
+        else{
+            p = NULL;
+        }
+    }
+    
+    String & String::operator=(const String &str){
+        if (p == str.p) {       // 需要判断 是否是 自己给自己赋值， 就是 a = a；的情况，如果是，直接返回就好了。
+            return *this;
+        }
+        if (p) {
+            delete []p;
+        }
+    
+        if (str.p) {
+            p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
+            strcpy(p, str.p);
+        }
+        else{
+            p = NULL;
+        }
+        return *this;
+    }
+    
+    char * String::operator=(const char *p_scr){
+        if (p) {            // 如果 p 是非空的(非NULL)，那么就要释放 p 原来指向的空间，因为这个空间是通过 new 在堆上分配的， 而后面 赋值的时候，要根据
+                            // p_scr 所指向空间的大小，重新分配内存，如果此处不释放，那么在程序结束之前，就不会释放掉 p 原来指向的内存空间。
+            delete []p;
+        }
+        if(p_scr){
+            p = new char[strlen(p_scr) + 1];
+            strcpy(p, p_scr);
+        }
+        else{
+            p = NULL;
+        }
+        return p;
+    }
+    
+    String::~String(){
+       delete []p; 
+    }
+    
+    int main(int argc, char *argv[]){
+        String s;
+        s = "this is a test";  // 调用的是返回值是 char * 的赋值运算函数
+        cout<< s.c_str() <<endl;   //this is a test
+        String s1;
+        s1 = s;     // 调用的是返回值是 String & 赋值运算符
+        cout<<s1.c_str()<<endl;  //this is a test
+    
+        return 0;
+    }
+    ```
