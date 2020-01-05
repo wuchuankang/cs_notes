@@ -115,6 +115,51 @@
 Note:  
 - 上面构造函数最好使用初始化列表，上面的构造函数是虽然名义上是用来初始化类的成员变量，但是不一定是对变量进行初始化操作，比如上面的构造函数，都是在函数体内部对成员变量进行赋值操作的，注意是赋值！**初始化与赋值的在操作任务量的区别，前者是在分配内存的时候，直接给定一个值，后者是先分配内存，然后再赋值，多了一次赋值操作**;  
 - 通过上面的分析，可以知道，通过初始化列表的好处；另外如果类中存在 const 成员变量，因为 const 变量必须初始化，如果使用在函数体内部进行赋值，那么编译器就会报错，则必须使用初始化列表；  
+- 另外一个关键的地方就是在继承的时候，因为子类不能够访问父类的私有成员，但子类的构造函数要给出父类对象的构造过程，如果在构造函数体内进行赋值操作，但又无法给父类的私有成员变量初始化，用初始化列表能很好的解决这个问题！
+    
+    ```cpp
+    #include <iostream>
+    using namespace std;
+    
+    class Bug{
+    private:
+       int nLegs;
+       int nColors;
+    
+    public:
+       int type;
+        Bug(int legs, int colors);
+    };
+    
+    Bug::Bug(int legs, int colors):nLegs(legs), nColors(colors){
+    }
+    
+    // 公有继承
+    class FlyBug:public Bug{
+    private:
+        int nWings;
+    public:
+        FlyBug(int legs, int colors, int wings);
+    };
+    
+    FlyBug::FlyBug(int legs, int colors, int wings):Bug(legs, colors), nWings(wings){
+    }
+    
+    // 错误的构造函数
+    /*FlyBug::FlyBug(int legs, int colors, int wings):{*/
+        //nLegs = legs;  // 因为不能访问到 基类的私有成员
+        //nColors = colors;
+        //nWings = wings;
+    /*}*/
+    
+    int main(int argc, char *argv[]){
+        FlyBug fb(2, 3, 4);
+        
+        return 0;
+    }
+    
+    ```
+
     ```cpp
     class Complex{
     private:
