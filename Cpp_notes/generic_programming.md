@@ -42,4 +42,55 @@ int main(int argc, char *argv[]){
 
 ### 类模板
 
-同样从实际的角度来考虑，我们什么时候会需要类模板？
+同样从实际的角度来考虑，我们什么时候会需要类模板？参见：　　
+![引子](./pictures/4_1.png)     
+下面给出一个例子：　　
+```cpp
+#include <string>
+#include <iostream>
+using namespace std;
+
+template <class T1, class T2>
+class Pair{
+    public:
+        T1 key;
+        T2 value;
+        Pair(T1 k, T2 v):key(k), value(v){}
+        bool operator<(const Pair<T1, T2> &p)const;
+};
+
+//类外定义需要将类型也带上
+template <class T1, class T2>
+bool Pair<T1, T2>::operator<(const Pair<T1, T2> &p)const{
+    return key < p.key;
+}
+
+int main(int argc, char *argv[]){
+    Pair<string, int> student("tom", 19);
+    cout<< student.key << "  " << student.value <<endl;
+
+    return 0;
+}
+```
+- 这里有一个概念要辨析： 类模板是类的模板，就是上面类模板的定义 Pair<class T1, class T2>，类模板的实例化叫模板类，即 Pair<string, int> 就是模板类，就是赋予了具体的类型，模板类多种多样，之间互不兼容，例如 Pair<string, int> 和 Pari<float, int> 就是两个不同的类
+
+### string 类
+string 类就是一个模板类，定义如下：　　
+```cpp
+typedef basic_string<char> string
+```
+通过typedef 将 模板类 basic_string<char> 重命令为string。可以知道 类模板 应该是下面的形式：
+```cpp
+template <class T>
+class basic_string{
+    ...
+}
+```
+string 对象的初始化：
+```cpp
+string s1("hello");   // 一个参数的构造函数
+string s2(8, 'x');     // 两个参数的构造函数
+string s3 = "this";   // 使用了赋值运算符初始化
+```
+
+
