@@ -249,16 +249,13 @@ Note:
 | 函数返回值| 希望返回对象在后面的使用中不会改变|
 | 类的成员函数| 该成员函数内部不能修改对象的成员|
 
-```cpp
-
-```
 
 ### 赋值运算符重载(Assignment Operators function override)
 对象除了进行初始化操作(调用复制构造函数)，还会进行赋值操作(调用的是赋值运算符)。  
 - 但是与复制构造函数(自定义了，编译器就不会默认生成)稍有不同，当没有提供以**类或者类的引用**作为参数的赋值运算符函数时，那么编译器还会生成默认的赋值运算符函数进行赋值的工作(也就是复制)。这里注意加粗部分的限制语句，意思是：即使是自定义了赋值运算符函数，如果参数不是类或者类的引用，那么仍会生成。具体参见[一文说尽C++赋值运算符](https://www.cnblogs.com/zpcdbky/p/5027481.html)     
-```cpp
 
-```
+- 赋值运算符函数在编写的时候，首要考虑的就是自赋值的情况，如果是自赋值，就直接返回自身好了；
+ 
 - 默认的赋值运算符函数进行赋值操作，和复制构造函数功能相似，所以同样有浅拷贝和深拷贝的问题，当对象中没有指针，没什么问题，否则赋值就是浅拷贝，两个对象中的指针指向同一块地址。  
      ```cpp
     #include <iostream>
@@ -295,97 +292,139 @@ Note:
      ```
 最后会爆出下面的错误：free(): double free detected in tcache 2 ，意思同一块内存被释放了2次。  
 正确的做法是自己重载赋值运算符函数，具体就是在类中添加该函数，看下面：  
-    ```cpp
-    class A{
-        ...
-        A & operator=(const A& scr);
-    }
-    
-    A& A::operator=(const A& scr){
+
+```cpp
+class A{
+    ...
+    A & operator=(const A& scr);
+}
+
+A& A::operator=(const A& scr){
+    if(this != &scr){       // 如果是自赋值，就返回自身
         v = scr.v;
         *p = *(scr.p);
+    }
+    return *this;
+}
+```  
+用一个更实际的例子来说明，就是string 类的赋值运算符函数：  
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cstring>
+using namespace std;
+
+class String{
+private:
+    char *p;
+
+public:
+    String();
+    String(const String&);
+    char *operator=(const char *p_scr);
+    String &operator=(const String &str);
+    const char * c_str(){return p;}
+    ~String();
+};
+
+String::String():p(NULL){       // 这里给 p 分配了内存空间，只是指向的是 NULL 
+}
+
+// 不用判断成员指着变量是否为空，因为还没有初始化，成员指针变量不可能指向任何地址的
+String::String(const String& str){
+    if (str.p) {    
+        p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
+        strcpy(p, str.p);
+    }
+    else{
+        p = NULL;
+    }
+}
+
+String & String::operator=(const String &str){
+    if (p == str.p) {       // 需要判断 是否是 自己给自己赋值， 就是 a = a；的情况，如果是，直接返回就好了。
         return *this;
     }
-    ```
-用一个更实际的例子来说明，就是string 类的赋值运算符函数：  
+    if (p) {
+        delete []p;
+    }
+
+    if (str.p) {
+        p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
+        strcpy(p, str.p);
+    }
+    else{
+        p = NULL;
+    }
+    return *this;
+}
+
+char * String::operator=(const char *p_scr){
+    if (p) {            // 如果 p 是非空的(非NULL)，那么就要释放 p 原来指向的空间，因为这个空间是通过 new 在堆上分配的， 而后面 赋值的时候，要根据
+                        // p_scr 所指向空间的大小，重新分配内存，如果此处不释放，那么在程序结束之前，就不会释放掉 p 原来指向的内存空间。
+        delete []p;
+    }
+    if(p_scr){
+        p = new char[strlen(p_scr) + 1];
+        strcpy(p, p_scr);
+    }
+    else{
+        p = NULL;
+    }
+    return p;
+}
+
+String::~String(){
+   delete []p; 
+}
+
+int main(int argc, char *argv[]){
+    String s;
+    s = "this is a test";  // 调用的是返回值是 char * 的赋值运算函数
+    cout<< s.c_str() <<endl;   //this is a test
+    String s1;
+    s1 = s;     // 调用的是返回值是 String & 赋值运算符
+    cout<<s1.c_str()<<endl;  //this is a test
+
+    return 0;
+}
+```
+- 在编写派生类的赋值运算符函数的时候，不要忘记的基类数据成员的重新赋值，这可以通过调用基类的赋值函数来实现。  
     ```cpp
-    #include <iostream>
-    #include <string>
-    #include <cstring>
-    using namespace std;
-    
-    class String{
+    class Base{
     private:
-        char *p;
+        int m_i, m_j;
     
     public:
-        String();
-        String(const String&);
-        char *operator=(const char *p_scr);
-        String &operator=(const String &str);
-        const char * c_str(){return p;}
-        ~String();
+        Base();
+        Base& operator=(const Base& other);
     };
     
-    String::String():p(NULL){       // 这里给 p 分配了内存空间，只是指向的是 NULL 
-    }
     
-    // 不用判断成员指着变量是否为空，因为还没有初始化，成员指针变量不可能指向任何地址的
-    String::String(const String& str){
-        if (str.p) {    
-            p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
-            strcpy(p, str.p);
-        }
-        else{
-            p = NULL;
-        }
-    }
-    
-    String & String::operator=(const String &str){
-        if (p == str.p) {       // 需要判断 是否是 自己给自己赋值， 就是 a = a；的情况，如果是，直接返回就好了。
-            return *this;
-        }
-        if (p) {
-            delete []p;
-        }
-    
-        if (str.p) {
-            p = new char[strlen(str.p) + 1];    // +1 的原因是为 strcpy 函数中的 p 多一个空间来存储结尾符'\0'
-            strcpy(p, str.p);
-        }
-        else{
-            p = NULL;
+    Base& Base::operator=(const Base& other){
+        if(this != &other){
+            m_i = other.m_i;
+            m_j = other.m_j;
         }
         return *this;
     }
     
-    char * String::operator=(const char *p_scr){
-        if (p) {            // 如果 p 是非空的(非NULL)，那么就要释放 p 原来指向的空间，因为这个空间是通过 new 在堆上分配的， 而后面 赋值的时候，要根据
-                            // p_scr 所指向空间的大小，重新分配内存，如果此处不释放，那么在程序结束之前，就不会释放掉 p 原来指向的内存空间。
-            delete []p;
-        }
-        if(p_scr){
-            p = new char[strlen(p_scr) + 1];
-            strcpy(p, p_scr);
-        }
-        else{
-            p = NULL;
-        }
-        return p;
-    }
+    class Derive:public Base{
+    private:
+        int m_x, m_y;
     
-    String::~String(){
-       delete []p; 
-    }
+    public:
+        Derive();
+        Derive& operator=(const Derive& other);
+    };
     
-    int main(int argc, char *argv[]){
-        String s;
-        s = "this is a test";  // 调用的是返回值是 char * 的赋值运算函数
-        cout<< s.c_str() <<endl;   //this is a test
-        String s1;
-        s1 = s;     // 调用的是返回值是 String & 赋值运算符
-        cout<<s1.c_str()<<endl;  //this is a test
-    
-        return 0;
+    Derive& Derive::operator=(const Derive& other){
+        if(this != &other){
+            Base::operator=(other);   // 因为派生类不能访问基类的私有成员，因此不能使用 m_i = other.m_i 来赋值
+            m_x = other.m_x;
+            m_y = other.m_y;
+        }
+        return *this;
     }
     ```
