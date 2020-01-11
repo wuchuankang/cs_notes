@@ -2,14 +2,14 @@
 
 ## 变量的分类
  - 用户自定义的变量
- ```python
+ ```sh
  name=cc
  echo $name   # $是提取变量的值，在比如经常要查看的是 echo $PATH 环境变量
  ```
  - **变量的命令=两端不能有空格！这个经常会出错！**
  - set：可以查看所有定义的变量，不只是自定义的变量
  - unset name : 取消所定义的变量为name的变量,比如经常要取消全局代理变量：
- ```python
+ ```sh
  unset all_proxy && unset ALL_PROXY # 注意使用了&& 多命令执行符，表示逻辑与，前一个命令执行，后一个命令才执行
  ```
 
@@ -27,21 +27,23 @@ linux 原来默认的是bash shell，我已经更该为 fish shell，那么在 ~
     - PATH : 系统查找命令的路径，相当重要！
 
 ## 变量的叠加
-    变量可以用叠加的方式更改，其格式：
-    ```python
-    aa = '123'
-    aa = '$aa'456
-    PATH = '$PATH$':xx #将xx目录添加到系统PATH 环境变量中，添加：的原因是path值是各个路径用：分开的。
-    ```
-## NOTE ：  
-- 上面所讲的，是在bash中执行的，只对当前有用，一旦系统重启，其定义的普通变量还是系统变量都会无效，也就是被删除掉，要想永久有效，得放到相应的配置文件中。
-- 如果环境变量的值是某个命令或者软件启动的命令路径，那么 $变量 就可以使用该命令，例如：
-```python
-export EDITOR=/usr/bin/nano
-export chrome = /usr/bin/google-chrome-stable
-$EDITOR #启动 nano
-$chrome #启动chrome
+变量可以用叠加的方式更改，其格式：  
+
+```sh
+aa = '123'
+aa = '$aa'456
+PATH = '$PATH$':xx #将xx目录添加到系统PATH 环境变量中，添加：的原因是path值是各个路径用：分开的。
 ```
+
+## NOTE
+- 上面所讲的，是在bash中执行的，只对当前有用，一旦系统重启，其定义的普通变量还是系统变量都会无效，也就是被删除掉，要想永久有效，得放到相应的配置文件中。
+- 如果环境变量的值是某个命令或者软件启动的命令路径，那么 $变量 就可以使用该命令，例如：  
+    ```sh
+    export EDITOR=/usr/bin/nano
+    export chrome = /usr/bin/google-chrome-stable
+    $EDITOR #启动 nano
+    $chrome #启动chrome
+    ```
 - 系统的配置文件
     - /etc/profile
     - ~/.bash_profile
