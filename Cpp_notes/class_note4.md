@@ -225,7 +225,7 @@ int main(int argc, char *argv[]){
 - 抽象类：包含纯虚函数的类叫抽象类，所以抽象类中还可以有其他的成员变量和函数；
 - 纯虚函数：虚函数在声明的时候初始化为0的函数；
 
-```cpp
+``` cpp
 class Shape{    // 抽象类
     public:
         virtual void Draw() = 0;    // 纯虚函数
